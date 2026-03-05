@@ -1,0 +1,39 @@
+.hero-banner-container {
+ object-fit: cover;
+ width: 100%;
+}
+
+.hero-banner-wrapper {
+    max-width: 100% !important;
+    padding: 0 !important;
+}
+
+.banner-desktop {
+  width: 100%;
+  display: block;
+}
+
+.banner-desktop img {
+  width: 100%;
+  height: auto;
+}
+
+.banner-mobile {
+  width: 100%;
+  display: none;
+}
+
+.banner-mobile img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 649px) {
+    .banner-mobile {
+        display: block;
+    }
+    .banner-desktop {
+        display: none;
+    }
+}

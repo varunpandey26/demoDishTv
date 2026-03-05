@@ -1,0 +1,127 @@
+.landing-feature-wrapper {
+  width: 100%;
+  padding: 30px 15px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .landing-feature-wrapper {
+    width: 85%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 0;
+  }
+}
+
+.landing-feature.block {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+@media (min-width: 768px) {
+  .landing-feature.block {
+    gap: 40px;
+  }
+}
+
+/* Two columns on both mobile and desktop */
+.landing-feature.block .feature-landing-row-0,
+.landing-feature.block .feature-landing-row-1 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+@media (min-width: 768px) {
+  .landing-feature.block .feature-landing-row-0,
+  .landing-feature.block .feature-landing-row-1 {
+    gap: 40px;
+  }
+}
+
+/* Base (Mobile) Styles - Stacked and Centered */
+.landing-feature.block .feature-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.landing-feature.block .feature-col .card-img {
+  margin: 0 0 10px 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.landing-feature.block .feature-col .card-img picture {
+  display: block;
+}
+
+.landing-feature.block .feature-col .card-img img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  display: block;
+}
+
+.landing-feature.block .feature-col .card-title {
+  margin: 0 0 8px 0;
+  color: #e54614;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.landing-feature.block .feature-col .card-title strong {
+  font-weight: 600;
+}
+
+.landing-feature.block .feature-col .card-desc {
+  margin: 0;
+  color: #222222;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Desktop Styles - Left-Aligned Image Grid */
+@media (min-width: 768px) {
+  .landing-feature.block .feature-col {
+    display: grid;
+    /* Fixed width prevents min-content collapsing issue */
+    grid-template-columns: 100px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 24px;
+    row-gap: 8px;
+    align-items: center;
+    text-align: left;
+  }
+
+  .landing-feature.block .feature-col .card-img {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    margin: 0;
+    width: auto;
+  }
+
+  .landing-feature.block .feature-col .card-img img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .landing-feature.block .feature-col .card-title {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    align-self: end;
+    font-size: 22px;
+  }
+
+  .landing-feature.block .feature-col .card-desc {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 0;
+    align-self: start;
+    font-size: 15px;
+  }
+}
