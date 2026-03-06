@@ -1,0 +1,183 @@
+/* ========================================================================= */
+/* Wrapper - Full Width and Fixed to Bottom                                  */
+/* ========================================================================= */
+.lead-form-wrapper {
+  max-width: 100% !important;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: #000;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+  padding: 5px 0;
+  font-family: inherit;
+  border-top: 2px solid #333; /* subtle line separating it from page content if needed */
+}
+
+.lead-form {
+  max-width: 95%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ========================================================================= */
+/* Desktop Layout                                                            */
+/* ========================================================================= */
+.lead-form-element {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  width: 100%;
+}
+
+.lead-form-element > * {
+  flex: 1; /* Make all inputs and buttons equal width */
+  box-sizing: border-box;
+}
+
+.lead-form-input {
+  padding: 12px 18px;
+  border-radius: 6px;
+  border: none;
+  font-size: 18px;
+  outline: none;
+  background-color: #fff;
+  color: #333;
+}
+
+.lead-form-input::placeholder {
+  color: #888;
+  font-weight: 500;
+}
+
+.lead-form-submit-btn,
+.lead-form-mobile-toggle {
+  background: linear-gradient(180deg, #f55151 0%, #d41e1e 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 40px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+.lead-form-submit-btn:hover,
+.lead-form-mobile-toggle:hover {
+  opacity: 0.9;
+}
+
+/* Hide mobile toggle on desktop */
+.lead-form-mobile-toggle {
+  display: none;
+}
+
+/* Desktop Specific Wrapper adjustments for message */
+.lead-form-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+/* Position the message text below the inputs */
+.lead-form-message-container {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.lead-form-message-content {
+  text-align: center;
+  color: #fff;
+  font-size: 20px;
+}
+
+.lead-form-message-content p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.lead-form-or-text {
+  font-size: 20px;
+  margin-bottom: 2px !important;
+}
+
+.lead-form-call-text {
+  font-size: 20px;
+}
+
+.lead-form-call-text a {
+  color: #f15e22; /* Matches primary orange tone */
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+/* ========================================================================= */
+/* Mobile/Tablet Layout (Toggle State)                                       */
+/* ========================================================================= */
+@media (max-width: 900px) {
+  .lead-form-wrapper {
+    padding: 15px 20px !important;
+  }
+  
+  .lead-form {
+    padding: 0;
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+
+  /* Show the toggle button */
+  .lead-form-mobile-toggle {
+    display: block;
+    width: 92%;
+    padding: 15px;
+    font-size: 16px;
+    position: relative;
+    z-index: 2; /* Keep button above form when collapsed */
+  }
+
+  /* Hide toggle button when form is open */
+  .lead-form.is-open .lead-form-mobile-toggle {
+    display: none;
+  }
+
+  /* Hide the actual form elements by default on mobile */
+  .lead-form-input-container,
+  .lead-form-message-container {
+    display: none;
+  }
+
+  /* When the block has the 'is-open' class (toggled by JS) */
+  .lead-form.is-open .lead-form-input-container,
+  .lead-form.is-open .lead-form-message-container {
+    display: block;
+  }
+
+  .lead-form.is-open .lead-form-element {
+    flex-direction: column;
+    width: 92%;
+  }
+
+  .lead-form.is-open .lead-form-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 18px;
+  }
+
+  .lead-form.is-open .lead-form-submit-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 5px;
+  }
+}
