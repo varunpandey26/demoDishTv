@@ -1,3 +1,23 @@
+async function loadSweetAlert() {
+  if (window.Swal) return;
+
+  const css = document.createElement('link');
+  css.rel = 'stylesheet';
+  css.href = 'https://cdn.jsdelivr.net/npm/sweetalert2@11.7.28/dist/sweetalert2.min.css';
+  document.head.appendChild(css);
+
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11.7.28/dist/sweetalert2.all.min.js';
+  script.async = true;
+
+  document.body.appendChild(script);
+
+  return new Promise((resolve) => {
+    script.onload = resolve;
+  });
+}
+
+
 export default function decorate(block) {
   let apiDomain = "https://beta2-bizlogic-api.dishtv.in";
 
@@ -24,6 +44,7 @@ export default function decorate(block) {
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.name = 'name';
+  nameInput.id = 'txtName';
   nameInput.placeholder = 'Name';
   nameInput.required = true;
   nameInput.classList.add('lead-form-input', 'lead-form-input-name');
@@ -31,6 +52,7 @@ export default function decorate(block) {
   const phoneInput = document.createElement('input');
   phoneInput.type = 'tel';
   phoneInput.name = 'phone';
+  phoneInput.id = 'txtMobile';
   phoneInput.placeholder = 'Mob No';
   phoneInput.required = true;
   phoneInput.classList.add('lead-form-input', 'lead-form-input-phone');
@@ -67,19 +89,20 @@ export default function decorate(block) {
 
   /* API submission */
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    await loadSweetAlert();
     const mobileNo = phoneInput.value;
     const name = nameInput.value;
-    CheckTicketForPD(mobileNo, name);
+    checkTicketForPD(mobileNo, name);
   });
 
   // Validate ticket and proceed to submit
-  function CheckTicketForPD(mobileNo, name) {
+  function checkTicketForPD(mobileNo, name) {
     try {
       let apiUrl = apiDomain + "/api/PrePaidHomeDelivery/CheckTicketForPD";
       $.ajax({
-        type: "POST",
+        method: "POST",
         url: `${apiUrl}`,
         beforeSend: function (request) {
           request.setRequestHeader("Authorization", typeof readCookie === 'function' ? readCookie("token") : "");
@@ -94,23 +117,23 @@ export default function decorate(block) {
             if (response != null && response.data && response.data.resultCode == 0 && response.data.result.isValid == 0) {
               Swal.fire("", response.data.result.errDesc, "error");
             } else {
-              getcallbackresponse(mobileNo, name);
+              getCallbackResponse(mobileNo, name);
             }
           } catch (err) {
-            console.error("Error handling CheckTicketForPD response:", err);
+            console.error("Error handling checkTicketForPD response:", err);
           }
         },
         error: function (error) {
-          console.error("AJAX error in CheckTicketForPD:", error);
+          console.error("AJAX error in checkTicketForPD:", error);
         },
       });
     } catch (err) {
-      console.error("Error in CheckTicketForPD:", err);
+      console.error("Error in checkTicketForPD:", err);
     }
   }
 
   // Submit user details for callback
-  function getcallbackresponse(MobileNo, Name) {
+  function getCallbackResponse(mobileNo, name) {
     try {
       const url = new URL(window.location.href);
       const baseUrl = `${url.protocol}//${url.hostname}${url.pathname}`;
@@ -124,7 +147,7 @@ export default function decorate(block) {
         },
         data: JSON.stringify({
           URL: baseUrl,
-          Name,
+          Name: name,
           AdUnit: "",
           SiteId: typeof utmSource !== 'undefined' ? utmSource : "",
           Source: typeof Source !== 'undefined' ? Source : "",
@@ -137,7 +160,7 @@ export default function decorate(block) {
           Pincode: "",
           Section: "",
           Latitude: "",
-          MobileNo,
+          MobileNo: mobileNo,
           Longitude: "",
           SourceName: typeof SourceName !== 'undefined' ? SourceName : "",
           AlternateNo: "",
@@ -149,9 +172,9 @@ export default function decorate(block) {
           Device: typeof utmDevice !== 'undefined' ? utmDevice : "",
         }),
       };
-      if (Name.trim().length === 0) {
+      if (name.trim().length === 0) {
         Swal.fire("", "Please Enter Your Name", "error");
-      } else if (!/^[6-9]\d{9}$/.test(MobileNo)) {
+      } else if (!/^[6-9]\d{9}$/.test(mobileNo)) {
         Swal.fire("", "Please Enter Valid Mobile No.", "error");
       } else {
         $(".loader-box-wrapper").show();
@@ -162,34 +185,34 @@ export default function decorate(block) {
               if (response != null && response.data && response.data.resultCode == 0) {
                 $(".landingpagebooknowfooter").hide();
                 // Fire data layer immediately on AJAX success
-                try {
-                  trackDishtvAnalytics("pageLoaded", {
-                    xdmPageLoad: {
-                      web: {
-                        webPageDetails: {
-                          pageName: "999 thankyou page",
-                          channel: "999",
-                          productCategory: "999 offer",
-                        },
-                      },
-                      transaction: { transactionID: "NA" },
-                    },
-                  });
-                } catch (err) {
-                  console.error("Error tracking thankyou analytics:", err);
-                }
+                // try {
+                //   trackDishtvAnalytics("pageLoaded", {
+                //     xdmPageLoad: {
+                //       web: {
+                //         webPageDetails: {
+                //           pageName: "999 thankyou page",
+                //           channel: "999",
+                //           productCategory: "999 offer",
+                //         },
+                //       },
+                //       transaction: { transactionID: "NA" },
+                //     },
+                //   });
+                // } catch (err) {
+                //   console.error("Error tracking thankyou analytics:", err);
+                // }
 
                 // Fire media/ad platform pixels immediately on success
-                try {
-                  gtag("event", "leadbooknow", { send_to: "AW-967231913/mVgmCOa0yYkBEKmTm80D", source: window.location.href });
-                  setTimeout(() => fbq('track', 'Lead'), 1000);
-                  let url = window.location.href;
-                  if (window.location.pathname !== '/landing-page/har-ghar-hd-facebook.html') {
-                    gtag_report_conversion(url);
-                  }
-                } catch (err) {
-                  console.error("Error firing gtag/fbq/gtag_report_conversion:", err);
-                }
+                // try {
+                //   gtag("event", "leadbooknow", { send_to: "AW-967231913/mVgmCOa0yYkBEKmTm80D", source: window.location.href });
+                //   setTimeout(() => fbq('track', 'Lead'), 1000);
+                //   let url = window.location.href;
+                //   if (window.location.pathname !== '/landing-page/har-ghar-hd-facebook.html') {
+                //     gtag_report_conversion(url);
+                //   }
+                // } catch (err) {
+                //   console.error("Error firing gtag/fbq/gtag_report_conversion:", err);
+                // }
 
                 Swal.fire(
                   "",

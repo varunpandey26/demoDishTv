@@ -11,6 +11,7 @@ import {
   loadSections,
   loadCSS,
 } from './aem.js';
+import { getToken } from './token.js';
 
 /**
  * Builds hero block and prepends to main in a new section.
@@ -168,6 +169,7 @@ async function loadLazy(doc) {
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
+  getToken();
 }
 
 /**
