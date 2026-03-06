@@ -3,11 +3,12 @@
   position: relative;
   margin-top: 50px; /* Space for the floating card to overlap the above section */
   font-family: inherit;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .custom-footer {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 0 40px;
   color: #fff;
   display: flex;
@@ -83,11 +84,18 @@
   font-size: 14px;
 }
 
-.custom-footer .floating-footer-links-section ul li a:hover {
+@media (hover: hover) {
+  .custom-footer .floating-footer-links-section ul li a:hover {
+    background: #f15e22;
+    color: #fff;
+  }
+}
+
+/* Active state for a better click feel on mobile */
+.custom-footer .floating-footer-links-section ul li a:active {
   background: #f15e22;
   color: #fff;
 }
-
 /* ========================================================================= */
 /* Important Links Section                                                   */
 /* ========================================================================= */
@@ -262,6 +270,17 @@
   /* Hide the ul in mobile to mock the accordion structure from screenshots */
   .custom-footer .imp-footer-links .footer-link-column ul {
     display: none;
+  }
+
+  /* Accordion Open State */
+  .custom-footer .imp-footer-links .footer-link-column.accordion-open ul {
+    display: block;
+    margin-top: 15px;
+  }
+
+  .custom-footer .imp-footer-links .footer-link-column.accordion-open h4::after {
+    transform: rotate(225deg); /* Arrow points up when open */
+    margin-top: 5px; /* Adjust alignment after rotation */
   }
 
   /* Re-ordering for Mobile Layout */

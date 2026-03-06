@@ -11,6 +11,24 @@ export default function decorate(block) {
       row.classList.add('imp-footer-links');
       [...row.children].forEach((col) => {
         col.classList.add('footer-link-column');
+        
+        // Add click listener for mobile accordion
+        const heading = col.querySelector('h4');
+        if (heading) {
+          heading.addEventListener('click', () => {
+            // Only toggle on mobile screens (< 900px)
+            if (window.innerWidth <= 900) {
+              const isOpen = col.classList.contains('accordion-open');
+              // Optional: Close all other accordions first
+              const allColumns = row.querySelectorAll('.footer-link-column');
+              allColumns.forEach((c) => c.classList.remove('accordion-open'));
+              
+              if (!isOpen) {
+                col.classList.add('accordion-open');
+              }
+            }
+          });
+        }
       });
     }
     if (r === 2) {
