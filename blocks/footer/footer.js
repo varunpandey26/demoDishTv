@@ -13,10 +13,18 @@ export default async function decorate(block) {
 
   // decorate footer DOM
   block.textContent = '';
-  const footer = document.createElement('div');
+  // const footer = document.createElement('div');
   while (fragment.firstElementChild) footer.append(fragment.firstElementChild);
 
-  block.append(footer);
+  // block.append(footer);
+  /* ---- Initialize blocks inside the fragment ---- */
+
+  const blocks = block.querySelectorAll('.block');
+
+  for (const b of blocks) {
+    decorateBlock(b);
+    await loadBlock(b);
+  }
 }
 
 
