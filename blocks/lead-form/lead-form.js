@@ -1,3 +1,5 @@
+import { proxyUrl } from '../../scripts/token.js';
+
 async function loadSweetAlert() {
   if (window.Swal) return;
 
@@ -98,152 +100,128 @@ export default function decorate(block) {
   });
 
   // Validate ticket and proceed to submit
-  function checkTicketForPD(mobileNo, name) {
+  async function checkTicketForPD(mobileNo, name) {
     try {
-      let apiUrl = apiDomain + "/api/PrePaidHomeDelivery/CheckTicketForPD";
-      $.ajax({
+      const apiUrl = proxyUrl(apiDomain + "/api/PrePaidHomeDelivery/CheckTicketForPD");
+      const token = typeof readCookie === 'function' ? readCookie("token") : "";
+      const response = await fetch(apiUrl, {
         method: "POST",
-        url: `${apiUrl}`,
-        beforeSend: function (request) {
-          request.setRequestHeader("Authorization", typeof readCookie === 'function' ? readCookie("token") : "");
-          request.setRequestHeader("Content-Type", "application/json");
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
         },
-        data: JSON.stringify({
+        body: JSON.stringify({
           MobileNo: mobileNo,
           Flag: "2",
         }),
-        success: function (response) {
-          try {
-            if (response != null && response.data && response.data.resultCode == 0 && response.data.result.isValid == 0) {
-              Swal.fire("", response.data.result.errDesc, "error");
-            } else {
-              getCallbackResponse(mobileNo, name);
-            }
-          } catch (err) {
-            console.error("Error handling checkTicketForPD response:", err);
-          }
-        },
-        error: function (error) {
-          console.error("AJAX error in checkTicketForPD:", error);
-        },
       });
+      const data = await response.json();
+      if (data != null && data.data && data.data.resultCode == 0 && data.data.result.isValid == 0) {
+        Swal.fire("", data.data.result.errDesc, "error");
+      } else {
+        getCallbackResponse(mobileNo, name);
+      }
     } catch (err) {
       console.error("Error in checkTicketForPD:", err);
     }
   }
 
   // Submit user details for callback
-  function getCallbackResponse(mobileNo, name) {
+  async function getCallbackResponse(mobileNo, name) {
+    const loaderEl = document.querySelector(".loader-box-wrapper");
+    const footerEl = document.querySelector(".landingpagebooknowfooter");
+    const landingBtmEl = document.getElementById("landingbtmspace");
+
+    function showLoader() {
+      if (loaderEl) loaderEl.style.display = "";
+    }
+    function hideLoader() {
+      if (loaderEl) loaderEl.style.display = "none";
+    }
+    function hideFooter() {
+      if (footerEl) footerEl.style.display = "none";
+    }
+    function hideLandingBtm() {
+      if (landingBtmEl) landingBtmEl.style.display = "none";
+    }
+
     try {
       const url = new URL(window.location.href);
       const baseUrl = `${url.protocol}//${url.hostname}${url.pathname}`;
-      var settings = {
-        url: apiDomain + "/API/Campaing/SubmitUserDetail",
-        method: "POST",
-        timeout: 0,
-        headers: {
-          Authorization: typeof readCookie === 'function' ? readCookie("token") : "",
-          "Content-Type": "application/json",
-        },
-        data: JSON.stringify({
-          URL: baseUrl,
-          Name: name,
-          AdUnit: "",
-          SiteId: typeof utmSource !== 'undefined' ? utmSource : "",
-          Source: typeof Source !== 'undefined' ? Source : "",
-          UserId: "",
-          Address: "",
-          AdGroup: "",
-          EmailID: "noemail@noemail.com",
-          KeyWord: typeof utmKeyword !== 'undefined' ? utmKeyword : "",
-          Message: "",
-          Pincode: "",
-          Section: "",
-          Latitude: "",
-          MobileNo: mobileNo,
-          Longitude: "",
-          SourceName: typeof SourceName !== 'undefined' ? SourceName : "",
-          AlternateNo: "",
-          IsHDconnection: "",
-          ProspectiveSource: typeof ProspectiveSource !== 'undefined' ? ProspectiveSource : "",
-          CurrentDTHConnection: "",
-          Medium: typeof utmMedium !== 'undefined' ? utmMedium : "",
-          Campaign: typeof utmCampaign !== 'undefined' ? utmCampaign : "",
-          Device: typeof utmDevice !== 'undefined' ? utmDevice : "",
-        }),
+      const body = {
+        URL: baseUrl,
+        Name: name,
+        AdUnit: "",
+        SiteId: typeof utmSource !== 'undefined' ? utmSource : "",
+        Source: typeof Source !== 'undefined' ? Source : "",
+        UserId: "",
+        Address: "",
+        AdGroup: "",
+        EmailID: "noemail@noemail.com",
+        KeyWord: typeof utmKeyword !== 'undefined' ? utmKeyword : "",
+        Message: "",
+        Pincode: "",
+        Section: "",
+        Latitude: "",
+        MobileNo: mobileNo,
+        Longitude: "",
+        SourceName: typeof SourceName !== 'undefined' ? SourceName : "",
+        AlternateNo: "",
+        IsHDconnection: "",
+        ProspectiveSource: typeof ProspectiveSource !== 'undefined' ? ProspectiveSource : "",
+        CurrentDTHConnection: "",
+        Medium: typeof utmMedium !== 'undefined' ? utmMedium : "",
+        Campaign: typeof utmCampaign !== 'undefined' ? utmCampaign : "",
+        Device: typeof utmDevice !== 'undefined' ? utmDevice : "",
       };
+
       if (name.trim().length === 0) {
         Swal.fire("", "Please Enter Your Name", "error");
-      } else if (!/^[6-9]\d{9}$/.test(mobileNo)) {
+        return;
+      }
+      if (!/^[6-9]\d{9}$/.test(mobileNo)) {
         Swal.fire("", "Please Enter Valid Mobile No.", "error");
-      } else {
-        $(".loader-box-wrapper").show();
-        $.ajax(settings)
-          .done(function (response) {
-            try {
-              $(".loader-box-wrapper").hide();
-              if (response != null && response.data && response.data.resultCode == 0) {
-                $(".landingpagebooknowfooter").hide();
-                // Fire data layer immediately on AJAX success
-                // try {
-                //   trackDishtvAnalytics("pageLoaded", {
-                //     xdmPageLoad: {
-                //       web: {
-                //         webPageDetails: {
-                //           pageName: "999 thankyou page",
-                //           channel: "999",
-                //           productCategory: "999 offer",
-                //         },
-                //       },
-                //       transaction: { transactionID: "NA" },
-                //     },
-                //   });
-                // } catch (err) {
-                //   console.error("Error tracking thankyou analytics:", err);
-                // }
+        return;
+      }
 
-                // Fire media/ad platform pixels immediately on success
-                // try {
-                //   gtag("event", "leadbooknow", { send_to: "AW-967231913/mVgmCOa0yYkBEKmTm80D", source: window.location.href });
-                //   setTimeout(() => fbq('track', 'Lead'), 1000);
-                //   let url = window.location.href;
-                //   if (window.location.pathname !== '/landing-page/har-ghar-hd-facebook.html') {
-                //     gtag_report_conversion(url);
-                //   }
-                // } catch (err) {
-                //   console.error("Error firing gtag/fbq/gtag_report_conversion:", err);
-                // }
-
-                Swal.fire(
-                  "",
-                  "Thank you for submitting your details. Our representative will get back to you shortly.",
-                  "success"
-                ).then((result) => {
-                  if (result.isConfirmed) {
-                    $("#landingbtmspace").hide();
-                    location.reload();
-                  }
-                });
-                
-                // Reset native block inputs
-                nameInput.value = "";
-                phoneInput.value = "";
-                // Reset legacy ID inputs if they exist
-                if ($("#txtName").length) $("#txtName").val("");
-                if ($("#txtMobile").length) $("#txtMobile").val("");
-                
-              } else {
-                Swal.fire("", "Something went wrong", "warning").then(() => window.location.reload());
-              }
-            } catch (err) {
-              console.error("Error handling getcallbackresponse success:", err);
+      showLoader();
+      const token = typeof readCookie === 'function' ? readCookie("token") : "";
+      try {
+        const response = await fetch(proxyUrl(apiDomain + "/API/Campaing/SubmitUserDetail"), {
+          method: "POST",
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+        const data = await response.json();
+        hideLoader();
+        if (data != null && data.data && data.data.resultCode == 0) {
+          hideFooter();
+          Swal.fire(
+            "",
+            "Thank you for submitting your details. Our representative will get back to you shortly.",
+            "success"
+          ).then((result) => {
+            if (result.isConfirmed) {
+              hideLandingBtm();
+              location.reload();
             }
-          })
-          .fail(function (error) {
-            $(".loader-box-wrapper").hide();
-            console.error("AJAX error in getcallbackresponse:", error);
-            Swal.fire("", "Something went wrong", "warning").then(() => window.location.reload());
           });
+          nameInput.value = "";
+          phoneInput.value = "";
+          const txtNameEl = document.getElementById("txtName");
+          const txtMobileEl = document.getElementById("txtMobile");
+          if (txtNameEl) txtNameEl.value = "";
+          if (txtMobileEl) txtMobileEl.value = "";
+        } else {
+          Swal.fire("", "Something went wrong", "warning").then(() => window.location.reload());
+        }
+      } catch (error) {
+        hideLoader();
+        console.error("AJAX error in getcallbackresponse:", error);
+        Swal.fire("", "Something went wrong", "warning").then(() => window.location.reload());
       }
     } catch (err) {
       console.error("Error in getcallbackresponse:", err);
